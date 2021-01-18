@@ -1,30 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Loader from 'react-loader-spinner';
-
-const formatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 2,
-});
+import Currency from './Currency';
+import Error from './Error';
 
 const ProductList = (props) => {
-  if (props.errorMessage) {
-    return (
-      <>
-        <div className="message">{props.errorMessage}</div>
-
-        <button
-          onClick={props.getProducts}
-          className="white-button"
-        >
-          Try again
-        </button>
-      </>
-    );
-  }
-
-  if (props.loading || !props.products) {
+  if (props.loading) {
     return (
       <Loader
         type="ThreeDots"
@@ -35,19 +16,26 @@ const ProductList = (props) => {
     );
   }
 
-  if (!props.products.length) {
+  if (props.errorMessage) {
     return (
-      <>
-        <div className="message">Sorry, there are no products available right now.</div>
-
-        <button
-          onClick={props.getProducts}
-          className="white-button"
-        >
-          Try again
-        </button>
-      </>
+      <Error
+        message={props.errorMessage}
+        action={props.getProducts}
+      />
     );
+  }
+
+  if (props.products && !props.products.length) {
+    return (
+      <Error
+        message="Sorry, there are no products available right now."
+        action={props.getProducts}
+      />
+    );
+  }
+
+  if (!props.products) {
+    return null;
   }
 
   return (
@@ -63,13 +51,16 @@ const ProductList = (props) => {
             <div className="product-description">{product.description}</div>
           </span>
 
-          <span className="product-price">{formatter.format(product.audPrice)}</span>
+          <span className="product-price">
+            <Currency amount={product.audPrice} />
+          </span>
 
           <span className="add-to-cart">
             <button
               onClick={() => { props.onAddToCart(product); }}
               className="add-to-cart-button"
               disabled={!props.canAddProductToCart(product)}
+              data-testid={`cart-button-${product.productId}`}
             >
               Add to cart
             </button>
@@ -90,6 +81,9 @@ ProductList.propTypes = {
   })),
   errorMessage: PropTypes.string,
   getProducts: PropTypes.func.isRequired,
+  onAddToCart: PropTypes.func.isRequired,
+  canAddProductToCart: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default ProductList;

@@ -5,6 +5,7 @@ import Cart from './components/Cart';
 import settings from './settings';
 
 const checkOutUrl = `${settings.apiBase}checkout?token=${settings.apiToken}`;
+const defaultErrorMessage = 'Sorry, your order could not be processed.';
 
 export default class App extends Component {
   state = {
@@ -34,16 +35,17 @@ export default class App extends Component {
 
       if (status === 'OK') {
         alert('Thanks for your order!');
+
         this.setState({
           currentPage: 'products',
           cart: {},
         });
       } else {
-        throw new Error('Sorry, your order could not be processed.');
+        throw new Error(defaultErrorMessage);
       }
     } catch (err) {
       console.error(err);
-      alert(err.message);
+      alert(err.message || defaultErrorMessage);
     }
   }
 
@@ -114,7 +116,7 @@ export default class App extends Component {
           {this.state.currentPage === 'cart' && (
             <Cart
               items={this.getItemsArray()}
-              checkOut={this.checkOut}
+              onCheckOut={this.checkOut}
             />
           )}
         </main>

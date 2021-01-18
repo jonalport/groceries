@@ -15,7 +15,7 @@ export default class ProductListContainer extends Component {
     this.setState({
       loading: true,
       errorMessage: null,
-     });
+    });
 
     try {
       if (!settings.apiToken) {

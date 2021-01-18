@@ -1,11 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-const formatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 2,
-});
+import Currency from './Currency';
 
 const Cart = (props) => {
   if (!props.items.length) {
@@ -30,20 +25,25 @@ const Cart = (props) => {
           >
             <span className="item-name">{item.name} ({item.quantity})</span>
 
-            <span className="item-price">{formatter.format(item.audPrice * item.quantity)}</span>
+            <span className="item-price">
+              <Currency amount={item.audPrice * item.quantity} />
+            </span>
           </li>
         ))}
 
         <li className="item">
           <span />
 
-          <span className="cart-total">{formatter.format(getTotal())}</span>
+          <span className="cart-total">
+            <Currency amount={getTotal()} />
+          </span>
         </li>
       </ul>
 
       <button
         className="check-out-button"
-        onClick={props.checkOut}
+        onClick={props.onCheckOut}
+        data-testid="check-out-button"
       >
         Check out
       </button>
@@ -58,7 +58,7 @@ Cart.propTypes = {
     quantity: PropTypes.number.isRequired,
     audPrice: PropTypes.number.isRequired,
   })),
-  checkOut: PropTypes.func.isRequired,
+  onCheckOut: PropTypes.func.isRequired,
 };
 
 export default Cart;
